@@ -69,6 +69,7 @@ public class UDPChatClient extends Application {
 
     public static void main(String[] args) {
 
+        // Get IP-Address of Host
         try {
             host = InetAddress.getLocalHost(); //Bruges kun hvis client tilgås fra host-enheden
             //host = InetAddress.getByName("10.111.176.189"); // Jakses macs' private IP-adresse
@@ -88,18 +89,29 @@ public class UDPChatClient extends Application {
             Scanner userEntry = new Scanner(System.in);
             String message="", response="";
             boolean gotUsername = false;
-            String username = "blank";
+            String username = "blankestspace";
 
+            // Check if Username has been successfully generated
             if (gotUsername == false) {
-                System.out.print("Enter Username: ");
-                username = userEntry.nextLine();
+
+                // Check if Username is longer than 12 chars - if not, try again!
+                while (username.length() >= 12) { // Skal derudover kunne indeholde tal, underscore, og komma og intet andet!
+                    System.out.print("Enter Username: ");
+                    username = userEntry.nextLine();
+                }
+
+                // "Load" packet by passing it the newly entered Username
                 outPacket = new DatagramPacket(username.getBytes(), username.length(), host, PORT);
 
+                // Send Packet in the form of a byte array
                 datagramSocket.send(outPacket);
                 buffer = new byte[256];
                 inPacket = new DatagramPacket(buffer, buffer.length);
 
+                // receive packet containing data from Server
                 datagramSocket.receive(inPacket);
+
+                // Convert Server Response to String-type
                 response = new String(inPacket.getData(), 0, inPacket.getLength());
 
                 System.out.println(response);
@@ -107,18 +119,25 @@ public class UDPChatClient extends Application {
                 username = response;
             }
 
-            do {
+            do { // See Line 141 for while-condition
                 System.out.print("Enter message: ");
                 message = userEntry.nextLine();
 
+                // If User doesn't wish to go offline (nuværende alternativ til "quit"-knap)
                 if (!message.equals("***CLOSE***")){
+
+                    // "Load" outgoing packet by passing it the newly entered message
                     outPacket = new DatagramPacket(message.getBytes(), message.length(), host, PORT);
 
+                    // Send Packet in the form of a byte array
                     datagramSocket.send(outPacket);
                     buffer = new byte[256];
                     inPacket = new DatagramPacket(buffer, buffer.length);
 
+                    // receive packet containing data from Server
                     datagramSocket.receive(inPacket);
+
+                    // Convert Server Response to String-type
                     response = new String(inPacket.getData(), 0, inPacket.getLength());
 
                     System.out.println(response );
@@ -126,6 +145,7 @@ public class UDPChatClient extends Application {
                 }
 
             }
+            // While User hasn't gone Offline (nuværende alternativ til "quit"-knap)
             while (!message.equals("***CLOSE***"));
         }
         catch (IOException ioEx){
