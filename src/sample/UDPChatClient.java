@@ -84,19 +84,24 @@ public class UDPChatClient extends Application {
 
     private static void accessServer(){
 
+
         try{
             datagramSocket = new DatagramSocket();
             Scanner userEntry = new Scanner(System.in);
             String message="", response="";
             boolean gotUsername = false;
             String username = "blankestspace";
+            char[] validInput = new char[]{'a','b','c','d','e','f','g','h','i','j','k','l',
+                    'm','n','o','p','q','r','s','t','u','v','w','x','y','z','æ','ø','å',
+                    '0','1','2','3','4','5','6','7','8','9','-','_'}; //husk equalsIgnoreCase
+
 
             // Check if Username has been successfully generated
-            if (gotUsername == false) {
+            if (!gotUsername) {
 
                 // Check if Username is longer than 12 chars - if not, try again!
                 while (username.length() >= 12) { // Skal derudover kunne indeholde tal, underscore, og komma og intet andet!
-                    System.out.print("Enter Username: ");
+                    System.out.print("Enter Username (Valid Input: A-Z:, 0-9, -, _): ");
                     username = userEntry.nextLine();
                 }
 
